@@ -20,7 +20,7 @@ mov r3 r1    #copy r1 into r3 now r3 also has a1
 and r3 r0    # now r3 is 0x1000 0000 or 0x0000 0000
 
 slt r3 r4
-setbranch skipAnegate
+setbranch 14# skipAnegate
 rbranch0
 
 negate r1
@@ -66,11 +66,11 @@ setZero r4
 setZero r3
 
 
-mov r3 r1   #copy r1 into r3 now r3 also has b1
+mov r3 r1   # copy r1 into r3 now r3 also has b1
 and r3 r0   # now r3 is 0x1000 0000 or 0x0000 0000
 
 slt r3 r4
-setbranch skipBnegate
+setbranch 15# skipBnegate
 rbranch0
 
 negate r1
@@ -150,7 +150,7 @@ and r4 r0   # tempb & mask to get either 0x0000 0000 or 0x0000 0001 in r4
 
 setZero r5  # for slt check other operand
 slt r5 r4
-setbranch end_check_if_lowlow
+setbranch 29# end_check_if_lowlow
 rbranch0
 #### if tempb!= 0 in other words the LSB is 1
 moveinT r1  # copy the value in r1 into special temp reg
@@ -205,8 +205,8 @@ inc r6      # make r6 go back up to 8
 end_check_if_lowlow:
 inc r3      # i += 1 
 slt r3 r6   # loop condition if i<8
-setbranch lowlowloop
-setbranch lowlowloop  # target too far needs to add more to branch register
+setbranch -32 #lowlowloop
+setbranch -10#lowlowloop  # target too far needs to add more to branch register
 rbranch1
 
 ### end lowlowloop
@@ -249,7 +249,8 @@ moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
             # r4 is now either 0x0000 0000 0x0000 0001
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setbranch end_checkif_highlow
+setbranch 31#end_checkif_highlow
+setbranch 2 #end_checkif_highlow
 rbranch0    
             # LSB is one
 moveinT r1  # copy a1 into temp register for shifting
@@ -298,8 +299,8 @@ inc r6      # r6 now back to 8
 end_checkif_highlow:
 inc r3      # i += 1
 slt r3 r6   # check if i < 8
-setBranch   highlowloop
-setBranch   highlowloop
+setBranch   -32
+setBranch   -14
 rbranch1 
 
 ### end highlowloop
@@ -342,7 +343,9 @@ moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
             # r4 is now either 0x0000 0000 0x0000 0001
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setBranch end_checkif_lowhigh
+setBranch 31# end_checkif_lowhigh
+setBranch 9 # end_checkif_lowhigh
+
 rbranch0 
             # LSB is one
 moveinT r1  # copy a2 into temp register for shifting
@@ -409,8 +412,8 @@ end_checkif_lowhigh:
 
 inc r3      # i += 1
 slt r3 r6   # i < 8
-setBranch lowhighloop
-setBranch lowhighloop
+setBranch -32
+setBranch -21
 rbranch1 
 
 
@@ -452,7 +455,8 @@ moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
             # r4 is now either 0x0000 0000 0x0000 0001
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setBranch end_checkif_highhigh
+setBranch 31# end_checkif_highhigh
+setBranch 6 # end_checkif_highhigh
 rbranch0 
             # LSB is one
 moveinT r1  # copy a1 into temp register for shifting
@@ -506,8 +510,8 @@ end_checkif_highhigh:
 
 inc r3      # i += 1
 slt r3 r6   # i < 8
-setBranch highhighloop
-setBranch highhighloop
+setBranch -32 # highhighloop
+setBranch -18 # highhighloop
 rbranch1
 
 ### end high high loop
@@ -532,7 +536,7 @@ add r7 r0   # if r7 is 2 or 0 then all 0s
 slt r7 r0   # is r7 < 1 if so then r7 is 0 
             # product is positive if slt produce 1
             # then we skip the negate logic
-setBranch product_sign_correct
+setBranch 27# product_sign_correct
 rbranch1
 
 ###### last position

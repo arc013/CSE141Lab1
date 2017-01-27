@@ -5,7 +5,7 @@ movout r2    #r2 has a2
 mov r3 r1    #copy r1 into r3 now r3 also has a1
 and r3 r0    # now r3 is 0x1000 0000 or 0x0000 0000
 slt r3 r4
-setbranch skipAnegate
+setbranch skipAnegate  14
 rbranch0
 negate r1
 negate r2
@@ -21,8 +21,7 @@ store r3
 inc r3      # r3 is 2 for address of a2
 movin r2    # move a2 into store reg
 store r3
-skipAnegate:
-setZero r1
+skipAnegate: setZero r1
 inc r1
 inc r1
 inc r1      # r1 is now 3 for address of b1
@@ -37,7 +36,7 @@ setZero r3
 mov r3 r1   #copy r1 into r3 now r3 also has b1
 and r3 r0   # now r3 is 0x1000 0000 or 0x0000 0000
 slt r3 r4
-setbranch skipBnegate
+setbranch 15# skipBnegate
 rbranch0
 negate r1
 negate r2
@@ -53,8 +52,7 @@ store r3
 inc r3      # r3 is 2 for address of b2
 movin r2    # move b2 into store reg
 store r3
-skipBnegate:
-setZero r4  # clear r4
+skipBnegate: setZero r4  # clear r4
 shiftR r0
 shiftR r0
 shiftR r0
@@ -75,14 +73,13 @@ inc r2      # r2 is now 4 which is memory address of b2
 load r2     # now loading b2 into special load/store reg
 movout r2   # now r2 is b2
 setZero r3  # use r3 for loop count i
-lowlowloop:
-moveinT r2  # copy b2 into special temp reg for shifting
+lowlowloop: moveinT r2  # copy b2 into special temp reg for shifting
 shiftRN r3  # shift right i times to get the ith bit of b2
 moveoutT r4 # now r4 contains the correct bit to check in the LSB
 and r4 r0   # tempb & mask to get either 0x0000 0000 or 0x0000 0001 in r4
 setZero r5  # for slt check other operand
 slt r5 r4
-setbranch end_check_if_lowlow
+setbranch 29# end_check_if_lowlow
 rbranch0
 moveinT r1  # copy the value in r1 into special temp reg
 shiftLN r3  # a2 < i to get the bits needed to put in lower part of result
@@ -113,11 +110,10 @@ dec r6      # to get address 7 for second to last position of final result
 movein r5   # move the value we calculated for that position into special
 store r6    # storing the value into second to last final result position (7)
 inc r6      # make r6 go back up to 8
-end_check_if_lowlow:
-inc r3      # i += 1 
+end_check_if_lowlow: inc r3      # i += 1 
 slt r3 r6   # loop condition if i<8
-setbranch lowlowloop
-setbranch lowlowloop  # target too far needs to add more to branch register
+setbranch -32
+setbranch -10  # target too far needs to add more to branch register
 rbranch1
 setZero r1
 setZero r2
@@ -133,13 +129,13 @@ inc r2
 inc r2      # r2 is now 4 for mem location of b2
 load r2     # loading b2 into special load-store register
 movout r2   # moving b2 into r2
-highlowloop: #using r3 as i for loop count
-moveinT r2  # copy b2 into temp reg for shifting
+highlowloop: moveinT r2#using r3 as i for loop count
 shiftRN r3  # shifting right ith times to get ith bit of b2
 moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setbranch end_checkif_highlow
+setbranch 31#end_checkif_highlow
+setbranch 2
 rbranch0    
 moveinT r1  # copy a1 into temp register for shifting
 shiftLN r3  # getting the bits to go to the lower part 
@@ -174,11 +170,10 @@ movin r5    # moving the result after bits are added for 2nd position of final
 store r6    # storing 2nd position of final result back to memory location 6
 inc r6
 inc r6      # r6 now back to 8
-end_checkif_highlow:
-inc r3      # i += 1
+end_checkif_highlow: inc r3      # i += 1
 slt r3 r6   # check if i < 8
-setBranch   highlowloop
-setBranch   highlowloop
+setBranch -32 #highlowloop
+setBranch -14 #highlowloop
 rbranch1 
 setZero r1
 setZero r2
@@ -194,13 +189,13 @@ inc r2
 inc r2      # r2 is now 3 for mem location of b1
 load r2     # loading b1 into special load-store register
 movout r2   # moving b1 into r2
-lowhighloop: #using r3 as i for loop count
-moveinT r2  # copy b1 into temp reg for shifting
+lowhighloop: moveinT r2  #using r3 as i for loop count
 shiftRN r3  # shifting right ith times to get ith bit of b1
 moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setBranch end_checkif_lowhigh
+setBranch 31# end_checkif_lowhigh
+setBranch 9
 rbranch0 
 moveinT r1  # copy a2 into temp register for shifting
 shiftLN r3  # getting the bits to go to the lower part 
@@ -242,11 +237,10 @@ store r6    # storing the overflow bit (if there is one, if not it's zero) into
 inc r6
 inc r6
 inc r6      # r6 is back to 8
-end_checkif_lowhigh:
-inc r3      # i += 1
+end_checkif_lowhigh: inc r3      # i += 1
 slt r3 r6   # i < 8
-setBranch lowhighloop
-setBranch lowhighloop
+setBranch -32
+setBranch -21
 rbranch1 
 setZero r1
 setZero r2
@@ -261,13 +255,13 @@ inc r2
 inc r2      # r2 is now 3 for mem location of b1
 load r2     # loading b1 into special load-store register
 movout r2   # moving b1 into r2
-highhighloop: 
-moveinT r2  # copy b1 into temp reg for shifting
+highhighloop: moveinT r2  # copy b1 into temp reg for shifting
 shiftRN r3  # shifting right ith times to get ith bit of b1
 moveoutT r4 # now r4 contains the correct LSB to check
 and r4 r0   # checking to see if it's 0 or 1 
 slt r5 r4   # r5 is 0, checking if r4 is 1
-setBranch end_checkif_highhigh
+setBranch 31# end_checkif_highhigh
+setBranch 6 # end_checkif_highhigh
 rbranch0 
 moveinT r1  # copy a1 into temp register for shifting
 shiftLN r3  # getting the bits to go to the lower part 
@@ -306,11 +300,10 @@ store r6    # storing 1st position of final result to memory location 5
 inc r6
 inc r6
 inc r6      # r6 is back to 8
-end_checkif_highhigh:
-inc r3      # i += 1
+end_checkif_highhigh: inc r3      # i += 1
 slt r3 r6   # i < 8
-setBranch highhighloop
-setBranch highhighloop
+setBranch -32 # highhighloop
+setBranch -18  # highhighloop
 rbranch1
 setZero r1
 setZero r2
@@ -319,7 +312,7 @@ setZero r4
 setZero r5
 add r7 r0   # if r7 is 2 or 0 then all 0s
 slt r7 r0   # is r7 < 1 if so then r7 is 0 
-setBranch product_sign_correct
+setBranch 27# product_sign_correct
 rbranch1
 load r6     # loading final product last position into special load-store
 movout r1   # r1 now contains final product last position
@@ -348,8 +341,7 @@ negate r4  # flip the bits of r4
 add r4 r5  # adding 0 to r4 if there was overflow from previous position then
 movin r4   # moving 1st position of final product into special load-store
 store r6   # storing 1st position of final product into memory location 5
-product_sign_correct:
-halt
+product_sign_correct: halt
 
 
 
