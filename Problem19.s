@@ -13,7 +13,7 @@ in memory 127 is = 148
 loop1:
 	load r1		# load the left side operand from memory (starts at position 128)
 	inc r1		# increment the outer loops pointer
-	moveout r4  # move the loaded value to r4
+	movout r4  # move the loaded value to r4
 	mov r2, r0  # make sure inner loop operand is = 128
 loop2:
 	load r2		# load the right side operand from memory (starts at position 128)
@@ -35,8 +35,8 @@ loop3:
 	dec r0		# go to 126
 	load r0 	# load 8 from 126
 	moveinT r6  # move the count of current hamming distance to special temp register 
-	movout r6   # move out 8 to r6
-	slt r7, r6 	# do logic with 148
+	movout r6  # move out 8 to r6
+	slt r7, r6 	# is hamming loop counter less than 8
 	inc r0 		# go to 127
 	inc r0      # got to 128
 	moveoutT r6 # restore the count to r6
@@ -51,7 +51,7 @@ loop3:
 	//loop 2 logic 
 	dec r0		# go to 127
 	load r0 	# load 148 from 127
-	movout r7       # move out 148 to r7
+	movout r7  # move out 148 to r7
 	slt r2, r7 	# do logic with 148
 	inc r0 		# go to 128
 	setbranch 5
@@ -60,7 +60,7 @@ loop3:
 	//loop 1 logic
 	dec r0 		# go to 127
 	load r0 	# load 148 from 127
-	movout r7       # move out 148 to r7
+	movout r7  # move out 148 to r7
 	slt r1, r7 	# do logic with 148
 	inc r0 		# go to 128
 	setbranch 1
